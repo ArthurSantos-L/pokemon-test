@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Pokemon test API",
+    "description": "Base Pokemon API.",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://pokemon-test-gentrop.herokuapp.com/",
+      "description": "Main Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Welcome message",
+        "description": "Return a welcome base message.",
+        "operationId": "dummyCall",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns a base welcome message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pokemon/{name}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get specific pokemon",
+        "description": "Return a specific pokemon based on name.",
+        "operationId": "getPokemon",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique pokemon name.",
+            "example": "pikachu"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the given user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
