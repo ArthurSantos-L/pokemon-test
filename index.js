@@ -7,6 +7,7 @@ const PORT = 5000
 const basePokemonURL = (pokemonName) => `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
 
 app.get("/pokemon/:name", async  (req,res) =>{
+
   const pokemonName = req.params.name
   const response = await axios.get(basePokemonURL(pokemonName))
   const {id, name, abilities} = response.data
