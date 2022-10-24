@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const axios = require('axios')
 
-const PORT = process.env.port || PORT
+const PORT = process.env.PORT || 8000
 
 const basePokemonURL = (pokemonName) => `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
 
