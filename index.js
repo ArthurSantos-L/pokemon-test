@@ -1,38 +1,25 @@
-const swaggerUi = require('swagger-ui-express')
- const docs = require( './docs.json' )
+import os from 'os'
+import cluster from 'cluster'
 
-const express = require('express')
-const app = express()
-const axios = require('axios')
+const runPrimaryProcess = () => {
+  const processesCount = os.cpus().length * 2
+  console.log(`Primary ${process.pid} is running`);
+  console.log(`Forking Server with ${processesCount} processes \n`)
 
-const PORT = process.env.PORT || 8000
+  for (let index = 0; index < processesCount; index++)
+    cluster.fork()
 
-const basePokemonURL = (pokemonName) => `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+  cluster.on('exit', (worker, code, signal) => {
+    if(code !== 0 && !worker.exitedAfterDisconnect) {
+      console.log(`Worker ${worker.process.pid} died... scheduling another one!`)
+      cluster.fork()
+    }
+  })
+}
 
-const swaggerServe= swaggerUi.serve
-const swaggerSetup = (document) => swaggerUi.setup(document)
+const runWorkerProcess = async () => {
+  await import('./server.js')
+}
 
 
-app.use('/docs', swaggerServe)
-
-app.get('/docs', swaggerSetup(docs))
-
-app.get("/pokemon/:name", async  (req,res) =>{
-  try{
-    const pokemonName = req.params.name
-    const response = await axios.get(basePokemonURL(pokemonName))
-    const {id, name, abilities} = response.data
-    res.json({id,name, abilities})
-  }catch(error){
-    res.status(500)
-    res.json({message: `Error!\n ${JSON.stringify(error)}`})
-  }
-})
-
-app.get("/", (req, res)=>{
-  res.json("DUMMY API")
-})
-
-app.listen(PORT, ()=>{
-  console.log(`server is running on ${PORT}`)
-})
+cluster.isPrimary ? runPrimaryProcess() : runWorkerProcess()
